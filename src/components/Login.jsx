@@ -10,25 +10,38 @@ import { Context } from '../state-logic/Context.jsx'
 
 export const Login = () => {
   const {
-    socketIsReady,
+    socketIsOpen,
     socketError,
     lastMessage,
     user_id,
     sendMessage, // not used yet
-    closeSocket
+    closeSocket,
+    openSocket
   } = useContext(Context)
+
+
+  const toggleConnection = () => {
+    if (socketIsOpen) {
+      closeSocket()
+    } else {
+      openSocket()
+    }
+  }
+
+
+  const buttonText = socketIsOpen ? "Disconnect" : "Connect"
 
 
   return (
     <>
-      <p>Connected: {socketIsReady ? "true" : "false"}</p>
-      { !socketIsReady && <p>Error: {socketError}</p> }
+      <p>{socketIsOpen ? "Connected" : "No connection"}</p>
+      { socketError && <p>{socketError}</p> }
       <p>User ID: {user_id}</p>
       <p>Last Message: {lastMessage}</p>
       <button
-        onClick={closeSocket}
+        onClick={toggleConnection}
       >
-        Close Socket
+        {buttonText}
       </button>
     </>)
 }

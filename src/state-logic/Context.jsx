@@ -32,7 +32,7 @@ export const Context = createContext()
 
 
 export const Provider = ({ children }) => {
-  const [ socketIsReady, setSocketIsReady ] = useState(false)
+  const [ socketIsOpen, setSocketIsOpen ] = useState(false)
   const [ socketError, setSocketError ] = useState("")
   const [ lastMessage, setLastMessage ] = useState()
   const [ user_id, setUser_id ] = useState()
@@ -41,10 +41,11 @@ export const Provider = ({ children }) => {
   const socket = socketRef.current
 
 
+
   const messageNotSent = (message) => {
     // Fail quietly?
 
-    const reason = !socketIsReady
+    const reason = !socketIsOpen
       ? `WebSocket is closed${
           !user_id ? "; no user_id" : ""
         }`
@@ -57,7 +58,7 @@ export const Provider = ({ children }) => {
   const sendMessage = message => {
     const sender_id = message.sender_id || user_id
 
-    if (!socketIsReady || !sender_id) {
+    if (!socketIsOpen || !sender_id) {
       return messageNotSent(message)
     }
 
@@ -73,7 +74,7 @@ export const Provider = ({ children }) => {
 
 
   const socketOpened = () => {
-    setSocketIsReady(true)
+    setSocketIsOpen(true)
     setSocketError("")
   }
 
@@ -129,46 +130,21 @@ export const Provider = ({ children }) => {
   const socketClosed = ({ wasClean }) => {
     const error = wasClean ? "" : "ERROR: broken connection"
     setSocketError(error)
-    setSocketIsReady(false)
+    setSocketIsOpen(false)
+    socketRef.current = null
 
     const timeNow = new Date().toTimeString().split(" ")[0]
-    console.log(`Connected closed at ${timeNow} ${error}`)
+    console.log(`Connection closed at ${timeNow} ${error}`)
   }
 
 
-  const setUpSocket = () => {
+  const openSocket = () => {
     const socket = new WebSocket(SOCKET_URL);
     socket.onopen = socketOpened
     socket.onclose = socketClosed
     socket.onmessage = treatMessage
 
     socketRef.current = socket
-
-    // NOTE: React.StrictMode will force the Context to render
-    // twice, and so setUpSocket will be called twice. The first
-    // time, React.StrictMode will dismount the Context, causing
-    // the cleanup handler below to run. DURING DEVELOPMENT ONLY,
-    // you will see an extra connection attempt, which fails,
-    // followed by a successful connection attempt.
-    //
-    // In the browser, console, the "failed" attempt might appear
-    // like this:
-    //
-    //   <Browser> can’t establish a connection to the server at
-    //   <URL>
-    //
-    //   The connection to URL was interrupted while the page was
-    //   loading.
-    //   Connected closed at <time> ERROR: broken connection
-    //
-    // On the server, you will also see one New Connection
-    // followed immediately by this connection being closed:
-    //
-    //    New connection from: <strict's test uuid>
-    //    Socket closed for <strict's test uuid> (undefined)
-    //    New connection from: <actual user_id>
-    //
-    // This is normal, and it will only occur during development.
 
     return () => { socket.close() }
   }
@@ -179,19 +155,47 @@ export const Provider = ({ children }) => {
   }
 
 
-  useEffect(setUpSocket, [])
+  const prepareToOpenSocket = () => {
+    // Don't create a WebSocket instance immediately, just in case
+    // React.StrictMode is active during development. Instead,
+    // create a timeout callback which will be triggered:
+    // * After React has rendered this Context a second
+    //   time in the same time frame, if StrictMode is active
+    // * Before the next real render.
+    //
+    // If StrictMode _is_ active, React will unmount the Context
+    // immediately, which will trigger a call the clean-up
+    // function below. This will happen after the first
+    // double-render, and so openSocket() will not be triggered
+    // as a result of the "strict" (unmounted) render.
+    //
+    // If StrictMode is _not_ active, or when the second (real)
+    // render is called by StrictMode, the Context will _not_ be
+    // unmounted, so the timeout will trigger the openSocket()
+    // callback
+
+    const timeOut = setTimeout(openSocket, 0)
+
+    return () => {
+      clearTimeout(timeOut)
+    }
+  }
+
+
+  useEffect(prepareToOpenSocket, [])
   useEffect(sendConnectionConfirmation, [user_id])
 
 
   return (
     <Context.Provider
       value ={{
-        socketIsReady,
+        socketIsOpen,
         socketError,
         lastMessage,
         user_id,
         sendMessage,
-        closeSocket
+        closeSocket,
+        openSocket
       }}
     >
       {children}
