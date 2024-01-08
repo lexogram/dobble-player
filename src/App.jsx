@@ -1,5 +1,5 @@
 import { Provider } from "./state-logic/Context.jsx"
-import { Login } from "./components/Login"
+import { Login } from "./Pages/Login"
 function App() {
 
   return (
