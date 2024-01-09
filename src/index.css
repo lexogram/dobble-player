@@ -8,3 +8,27 @@ body {
   background-color: #222;
   color: #ddd;
 }
+
+#connecting {
+  width: 6em;
+}
+
+#disconnected {
+  text-align: center;
+  height: 7em;
+}
+
+label,
+label[for$=-name] * { /* user-name, group-name, not create-group */
+  display: block;
+  margin-bottom: 1em;
+}
+
+label[for] span {
+  margin-bottom: 0.25em;
+}
+
+li.owner {
+  font-weight: bold;
+  color: #fc6;
+}

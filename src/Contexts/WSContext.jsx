@@ -27,19 +27,65 @@ const SOCKET_URL = (function (){
 
 
 
-export const Context = createContext()
+export const WSContext = createContext()
 
 
 
-export const Provider = ({ children }) => {
+export const WSProvider = ({ children }) => {
   const [ socketIsOpen, setSocketIsOpen ] = useState(false)
   const [ socketError, setSocketError ] = useState("")
   const [ lastMessage, setLastMessage ] = useState()
-  const [ user_id, setUser_id ] = useState()
+  const [ user_id, setUserId ] = useState()
+  const [ user_name, setUserName ] = useState()
+  const [ group_name, setGroupName ] = useState()
+  const [ status, setStatus ] = useState(0)
+  const [ members, setMembers ] = useState([])
+  const [ owner, setOwner ] = useState()
+  const [ owner_id, setOwnerId ] = useState()
+  
+  
+  
+  console.log("user_id:", user_id);
+  console.log("user_name:", user_name);
+  console.log("group_name:", group_name);
+  console.log("members:", members);
+  
+  
 
   const socketRef = useRef(null)
   const socket = socketRef.current
 
+
+  const treatStatus = ({ status, group_name, owner }) => {
+    /// ({ status, user_name, group_name, owner })
+    if (/-fail/.test(status)) {
+      switch (status) {
+        case "join-failed":
+          status = `The group "${group_name}" does not exist yet.
+          Did you mean to create it?`
+          break
+        case "create-failed":
+          status = `The group "${group_name}" was created earlier by ${owner}. Uncheck the checkbox above if you only meant to join it.`
+      }
+      
+      setStatus(status)
+
+    } else {
+      setStatus(0)
+    }
+  }
+
+  const setGroupMembers = ({
+    group_name,
+    members,
+    owner,
+    owner_id
+  }) => {
+    setGroupName(group_name)
+    setMembers(members)
+    setOwner(owner)
+    setOwnerId(owner_id)
+  }
 
 
   const messageNotSent = (message) => {
@@ -69,6 +115,9 @@ export const Provider = ({ children }) => {
     message.sender_id = sender_id
 
     message = JSON.stringify(message)
+
+    console.log("message:", message);
+    
     socket.send(message)
   }
 
@@ -80,18 +129,33 @@ export const Provider = ({ children }) => {
 
 
   const treatSystemMessage = data => {
-    const { subject, recipient_id } = data
-    if (subject === "connection" ) {
-      // When it accepts a new connection request, WebSocket
-      // server should send a message with the format:
-      // { sender_id:    "system",
-      //   subject:      "connection",
-      //   recipient_id: <uuid>
-      // }
-      // This <uuid> should be used as the sender_id for all
-      // future messages.
+    const { subject, recipient_id, content } = data
 
-      setUser_id(recipient_id)
+    console.log("System Message");
+    console.log("subject:", subject);
+    console.log("content:", content);
+    
+
+    switch (subject) {
+      case "connection":
+        // When it accepts a new connection request, WebSocket
+        // server should send a message with the format:
+        // { sender_id:    "system",
+        //   subject:      "connection",
+        //   recipient_id: <uuid>
+        // }
+        // This <uuid> should be used as the sender_id for all
+        // future messages.
+
+        return setUserId(recipient_id)
+
+      case "group_joined":
+        return treatStatus(content)
+        
+      case "group_members":
+        console.log("About to call setGroupMembers content:", content);
+        
+        return setGroupMembers(content)
     }
   }
 
@@ -128,7 +192,7 @@ export const Provider = ({ children }) => {
 
 
   const socketClosed = ({ wasClean }) => {
-    const error = wasClean ? "" : "ERROR: broken connection"
+    const error = wasClean ? "" : "ERROR: Server is not responding."
     setSocketError(error)
     setSocketIsOpen(false)
     socketRef.current = null
@@ -182,23 +246,44 @@ export const Provider = ({ children }) => {
   }
 
 
+  const joinGroup = content => {
+    const message = {
+      recipient_id: "system",
+      subject: "join_group",
+      content // { user_name, group_name, create_group }
+    }
+
+    const { user_name } = content
+    setUserName(user_name)
+
+    sendMessage(message)
+  }
+
+
   useEffect(prepareToOpenSocket, [])
   useEffect(sendConnectionConfirmation, [user_id])
 
 
   return (
-    <Context.Provider
+    <WSContext.Provider
       value ={{
         socketIsOpen,
         socketError,
         lastMessage,
         user_id,
+        user_name,
+        group_name,
+        joinGroup,
+        members,
+        owner,
+        owner_id,
         sendMessage,
         closeSocket,
-        openSocket
+        openSocket,
+        status
       }}
     >
       {children}
-    </Context.Provider>
+    </WSContext.Provider>
   )
 }
