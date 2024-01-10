@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { MemberList } from '../Components/MemberList'
+import { PackList } from '../Components/PackList'
 
 export const WaitingRoom = (props) => {
 
@@ -13,6 +14,7 @@ export const WaitingRoom = (props) => {
     <>
       <h1>Members</h1>
       <MemberList />
+      <PackList />
     </>
   )
 }

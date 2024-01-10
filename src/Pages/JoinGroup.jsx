@@ -3,9 +3,13 @@
  */
 
 
-import React, { useContext, useState, useRef, useEffect } from 'react'
+import React, {
+  useContext,
+  useState,
+  useRef,
+  useEffect
+} from 'react'
 import { WSContext } from '../Contexts/WSContext.jsx'
-import { GameContext } from '../Contexts/GameContext.jsx'
 
 
 
@@ -18,7 +22,9 @@ export const JoinGroup = () => {
   const [ user_name, setUserName ] = useState("")
   const [ group_name, setGroupName ] = useState("")
   const [ create_group, setCreateGroup ] = useState(false)
-  
+  const [ disabled, setDisabled ] = useState(true)
+
+
   const focusRef = useRef()
 
 
@@ -26,8 +32,10 @@ export const JoinGroup = () => {
     const { name, value } = target
     if (name === "user_name") {
       setUserName(value)
+      setDisabled(!value || !group_name)
     } else {
       setGroupName(value)
+      setDisabled(!value || !user_name)
     }
   }
 
@@ -37,8 +45,9 @@ export const JoinGroup = () => {
   }
 
 
-  const createGroup = event => {
+  const joinTheGroup = event => {
     event.preventDefault()
+
     const data = {
       user_name,
       group_name,
@@ -60,7 +69,7 @@ export const JoinGroup = () => {
   return (
     <form
       id="join-group"
-      onSubmit={createGroup}
+      onSubmit={joinTheGroup}
     >
       <label htmlFor="user-name">
         <span>Choose a player name:</span>
@@ -88,7 +97,7 @@ export const JoinGroup = () => {
           type="checkbox"
           id="create-group"
           name="create_group"
-          checked={create_group} 
+          checked={create_group}
           onChange={toggleCreateGroup}
         />
         <span>Create a new group</span>
@@ -96,6 +105,7 @@ export const JoinGroup = () => {
       <p>{ status ? status : "" }</p>
       <button
         type="submit"
+        disabled={disabled}
       >
         Join the Group
       </button>

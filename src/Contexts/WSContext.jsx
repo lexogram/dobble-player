@@ -12,17 +12,31 @@ import React, {
 import { PORT } from '../constants'
 
 // Determine the URL to use for WebSocket
-const SOCKET_URL = (function (){
+const [ SOCKET_URL, BASE_URL ] = (function (){
   let URL = location.hostname
 
-  const isLocal = URL.startsWith("localhost")
-              || URL.startsWith("192.168")
-              || URL.startsWith("127.0.0")
-  const protocol = isLocal ? "ws" : "wss"
+  const isLocal = (() => {
+    // Check the range 172.16.x.x to 172.31.x.x
+    const match = /^172\.(\d{2})\./.test(URL)
+    if (match) {
+      if (match[1] > 15 && match[1] < 32) {
+        return true
+      }
+    }
 
-  URL = `${protocol}://${URL}:${PORT}`
+    return URL.startsWith("localhost")
+        || URL.startsWith("10.")
+        || URL.startsWith("192.168.")
+        || URL.startsWith("127.0.0.")
+  })()
 
-  return URL
+  const wsProtocol = isLocal ? "ws" : "wss"
+  const httProtocol = isLocal ? "http" : "https"
+
+  return [
+    `${wsProtocol}://${URL}:${PORT}`,
+    `${httProtocol}://${URL}:${PORT}/` // trailing slash
+  ]
 })()
 
 
@@ -42,15 +56,11 @@ export const WSProvider = ({ children }) => {
   const [ members, setMembers ] = useState([])
   const [ owner, setOwner ] = useState()
   const [ owner_id, setOwnerId ] = useState()
-  
-  
-  
-  console.log("user_id:", user_id);
-  console.log("user_name:", user_name);
-  console.log("group_name:", group_name);
-  console.log("members:", members);
-  
-  
+
+  // console.log("user_id:", user_id);
+  // console.log("user_name:", user_name);
+  // console.log("group_name:", group_name);
+  // console.log("members:", members);
 
   const socketRef = useRef(null)
   const socket = socketRef.current
@@ -67,7 +77,7 @@ export const WSProvider = ({ children }) => {
         case "create-failed":
           status = `The group "${group_name}" was created earlier by ${owner}. Uncheck the checkbox above if you only meant to join it.`
       }
-      
+
       setStatus(status)
 
     } else {
@@ -116,8 +126,8 @@ export const WSProvider = ({ children }) => {
 
     message = JSON.stringify(message)
 
-    console.log("message:", message);
-    
+    // console.log("message:", message);
+
     socket.send(message)
   }
 
@@ -131,10 +141,9 @@ export const WSProvider = ({ children }) => {
   const treatSystemMessage = data => {
     const { subject, recipient_id, content } = data
 
-    console.log("System Message");
-    console.log("subject:", subject);
-    console.log("content:", content);
-    
+    // console.log("System Message");
+    // console.log("subject:", subject);
+    // console.log("content:", content);
 
     switch (subject) {
       case "connection":
@@ -151,10 +160,9 @@ export const WSProvider = ({ children }) => {
 
       case "group_joined":
         return treatStatus(content)
-        
+
       case "group_members":
-        console.log("About to call setGroupMembers content:", content);
-        
+        // console.log("About to call setGroupMembers content:", content);
         return setGroupMembers(content)
     }
   }
@@ -163,7 +171,7 @@ export const WSProvider = ({ children }) => {
   const sendConnectionConfirmation = () => {
     if (user_id) {
       const timeNow = new Date().toTimeString().split(" ")[0]
-      console.log(`Connected to ${SOCKET_URL} at ${timeNow}`)
+      // console.log(`Connected to ${SOCKET_URL} at ${timeNow}`)
 
       sendMessage({
         recipient_id: "system",
@@ -280,7 +288,8 @@ export const WSProvider = ({ children }) => {
         sendMessage,
         closeSocket,
         openSocket,
-        status
+        status,
+        BASE_URL
       }}
     >
       {children}
