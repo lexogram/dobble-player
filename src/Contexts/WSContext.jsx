@@ -10,6 +10,11 @@ import React, {
   useRef,
 } from 'react'
 import { PORT } from '../constants'
+import {
+  addMessageListener,
+  removeMessageListener,
+  treatMessage
+} from '../Utilities/messages'
 
 // Determine the URL to use for WebSocket
 const [ SOCKET_URL, BASE_URL ] = (function (){
@@ -48,11 +53,10 @@ export const WSContext = createContext()
 export const WSProvider = ({ children }) => {
   const [ socketIsOpen, setSocketIsOpen ] = useState(false)
   const [ socketError, setSocketError ] = useState("")
-  const [ lastMessage, setLastMessage ] = useState()
   const [ user_id, setUserId ] = useState()
   const [ user_name, setUserName ] = useState()
   const [ group_name, setGroupName ] = useState()
-  const [ status, setStatus ] = useState(0)
+  const [ errorStatus, setErrorStatus ] = useState(0)
   const [ members, setMembers ] = useState([])
   const [ owner, setOwner ] = useState()
   const [ owner_id, setOwnerId ] = useState()
@@ -67,7 +71,6 @@ export const WSProvider = ({ children }) => {
 
 
   const treatStatus = ({ status, group_name, owner }) => {
-    /// ({ status, user_name, group_name, owner })
     if (/-fail/.test(status)) {
       switch (status) {
         case "join-failed":
@@ -78,12 +81,13 @@ export const WSProvider = ({ children }) => {
           status = `The group "${group_name}" was created earlier by ${owner}. Uncheck the checkbox above if you only meant to join it.`
       }
 
-      setStatus(status)
+      setErrorStatus(status)
 
     } else {
-      setStatus(0)
+      setErrorStatus(0)
     }
   }
+
 
   const setGroupMembers = ({
     group_name,
@@ -183,19 +187,20 @@ export const WSProvider = ({ children }) => {
   }
 
 
-  const treatMessage = ({data}) => {
+  const socketMessage = ({data}) => {
     try {
       const json = JSON.parse(data)
       data = json
     } catch (error) {
-      // Leave data as it is?
+      // Leave data as it is? Drop it silently?
+      return
     }
 
     if (data.sender_id === "system") {
       return treatSystemMessage(data)
     }
 
-    setLastMessage(data)
+    treatMessage(data)
   }
 
 
@@ -214,7 +219,7 @@ export const WSProvider = ({ children }) => {
     const socket = new WebSocket(SOCKET_URL);
     socket.onopen = socketOpened
     socket.onclose = socketClosed
-    socket.onmessage = treatMessage
+    socket.onmessage = socketMessage
 
     socketRef.current = socket
 
@@ -275,9 +280,16 @@ export const WSProvider = ({ children }) => {
   return (
     <WSContext.Provider
       value ={{
+        BASE_URL,
+        openSocket,
+        closeSocket,
         socketIsOpen,
         socketError,
-        lastMessage,
+
+        sendMessage,
+        addMessageListener,
+        removeMessageListener, 
+
         user_id,
         user_name,
         group_name,
@@ -285,11 +297,7 @@ export const WSProvider = ({ children }) => {
         members,
         owner,
         owner_id,
-        sendMessage,
-        closeSocket,
-        openSocket,
-        status,
-        BASE_URL
+        errorStatus
       }}
     >
       {children}

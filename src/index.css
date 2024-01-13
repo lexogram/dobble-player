@@ -32,3 +32,8 @@ li.owner {
   font-weight: bold;
   color: #fc6;
 }
+
+button:not(:disabled),
+.button {
+  cursor: pointer
+}

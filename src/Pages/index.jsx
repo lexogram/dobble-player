@@ -1,5 +1,5 @@
 /**
- * src/Pages/Login.jsx
+ * src/Pages/Base.jsx
  */
 
 
@@ -15,17 +15,12 @@ import { Game } from './Game'
 
 
 
-export const Login = () => {
+export const Base = () => {
   const {
     socketIsOpen,
     socketError,
-    // lastMessage, // not required here
-    // user_id, // not required here
     user_name,
     group_name,
-    // sendMessage, // not used yet
-    // closeSocket, // not required here
-    // openSocket // not required here
   } = useContext(WSContext)
   const {
     gameData

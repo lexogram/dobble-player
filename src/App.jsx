@@ -1,10 +1,10 @@
 import { Provider } from "./Contexts"
-import { Login } from "./Pages/"
+import { Base } from "./Pages/"
 function App() {
 
   return (
     <Provider>
-      <Login />
+      <Base />
     </Provider>
   )
 }

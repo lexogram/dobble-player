@@ -9,7 +9,13 @@ import { PackCard } from './PackCard'
 
 
 export const PackList = () => {
-  const { packData } = useContext(GameContext)
+  const {
+    packData,
+    votes,
+    usersVote,
+    vote,
+    select
+  } = useContext(GameContext)
   const { user_id, owner_id, BASE_URL } = useContext(WSContext)
 
   const isOwner = user_id === owner_id
@@ -19,7 +25,11 @@ export const PackList = () => {
       key={pack.name}
       url={BASE_URL}
       pack={pack}
-      isOwner={isOwner}
+      votes={votes[pack.name]}
+      isUsersChoice={pack.name === usersVote}
+      canVote={!isOwner}
+      vote={() => vote(pack.name)}
+      select={isOwner && (() => select(pack.name))}
     />
   ))
 

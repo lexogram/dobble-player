@@ -8,16 +8,17 @@ import { WSContext } from '../Contexts'
 
 export const MemberList = () => {
   const { members, user_id, owner_id } = useContext(WSContext)
+  // members = { <uuid>: <user_name>, ...}
 
 
   const alphabetically = (a, b) => {
     // [ <name>, <user_id> ]
-    if (a[1] === user_id) {
+    if (a[0] === user_id) {
       return -1
-    } else if (b[1] === user_id) {
+    } else if (b[0] === user_id) {
       return 1
     } else {
-      return a[0] > b[0]
+      return a[1] > b[1]
     }
   }
 
@@ -25,7 +26,7 @@ export const MemberList = () => {
   const memberList = Object.entries(members)
     .sort(alphabetically)
     .map(( entry ) => {
-      const [ name, user_id ] = entry
+      const [ user_id, name ] = entry
       const className = user_id === owner_id ? "owner" : ""
       return (
         <li

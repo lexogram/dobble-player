@@ -4,19 +4,19 @@
 
 
 import React from 'react'
+import { Star } from './Star'
 
 
-export const PackCard = ({ url, pack, isOwner }) => {
+export const PackCard = ({
+  url,
+  pack,
+  votes,
+  isUsersChoice,
+  canVote,
+  vote,
+  select
+}) => {
   const { name, count, thumbnail, index } = pack
-
-
-  const selectPack = () => {
-    if (isOwner) {
-      // This selection will start the game
-    } else {
-      // This selection will add a vote for this pack
-    }
-  }
 
 
   return (
@@ -26,12 +26,17 @@ export const PackCard = ({ url, pack, isOwner }) => {
       <h1>{name}</h1>
       <p>Total images: {count}</p>
       <img src={url + thumbnail} alt={name} />
-
-      <button
-        onClick={selectPack}
-      >
-        {isOwner ? "Select Pack" : "Vote"}
-      </button>
+      <Star
+        votes={votes || ""}
+        isUsersChoice={isUsersChoice}
+        canVote={canVote}
+        action={canVote ? vote : () => {}}
+      />
+      {select &&
+        <button onClick={select} >
+          Select
+        </button>
+      }
     </li>
   )
 }

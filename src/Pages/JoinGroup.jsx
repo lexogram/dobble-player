@@ -16,11 +16,11 @@ import { WSContext } from '../Contexts/WSContext.jsx'
 export const JoinGroup = () => {
   const {
     joinGroup,
-    status
+    errorStatus
   } = useContext(WSContext)
 
   const [ user_name, setUserName ] = useState("")
-  const [ group_name, setGroupName ] = useState("")
+  const [ group_name, setGroupName ] = useState("Group")
   const [ create_group, setCreateGroup ] = useState(false)
   const [ disabled, setDisabled ] = useState(true)
 
@@ -102,7 +102,7 @@ export const JoinGroup = () => {
         />
         <span>Create a new group</span>
       </label>
-      <p>{ status ? status : "" }</p>
+      <p>{ errorStatus ? errorStatus : "" }</p>
       <button
         type="submit"
         disabled={disabled}
