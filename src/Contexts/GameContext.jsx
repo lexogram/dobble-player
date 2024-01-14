@@ -28,10 +28,11 @@ export const GameProvider = ({ children }) => {
     group_name
   } = useContext(WSContext)
   const [ packData, setPackData ] = useState([])
-  const [ listeners, setListeners ] = useState([])
   const [ votes, setVotes ] = useState({})
   const [ usersVote, setUsersVote ] = useState("")
   const [ gameData, setGameData ] = useState()
+  const [ lastClick, setLastClick ] = useState({})
+  const [ score, setScore ] = useState({})
 
 
   // SELECTING A PACK // SELECTING A PACK // SELECTING A PACK //
@@ -75,39 +76,78 @@ export const GameProvider = ({ children }) => {
     sendMessage(message)
   }
 
+
   const loadGameData = ({ content }) => {
     setGameData(content)
   }
 
 
+  // GAME PLAY / GAME PLAY / GAME PLAY / GAME PLAY / GAME PLAY //
+
+  const clickImage = ( cardIndex, href ) => {
+    if ( lastClick.href === href
+      && lastClick.cardIndex !== cardIndex
+       ) {
+      sendMessage({
+        recipient_id: "game",
+        subject: "match",
+        content: { href, group_name }
+      })
+    } else {
+      setLastClick({ cardIndex, href })
+    }
+  }
+
+
+  const matchFound = ({ content }) => {
+    const {
+      href,
+      user_name,
+      index,
+      score
+    } = content
+
+    if (index === "game_over") {
+
+    } else {
+      // Show the next card
+      setGameData({ ...gameData, index })
+      // Forget any clicks applied to the previous cards
+      setLastClick({})
+    }
+
+    setScore(score)
+
+  }
+
+
   // MESSAGES // MESSAGES // MESSAGES // MESSAGES // MESSAGES //
 
+
+  /**
+   * addMessageListeners() is called on every single render,
+   * because any incoming messages must have access to the scope
+   * of the current render.
+   * removeMessageListener() is therefore also called just before
+   * the next render, to clear out listener callbacks that are no
+   * longer valid.
+   */
   const addMessageListeners = () => {
     const listeners = [
       { subject: "votes", callback: updateVotes },
-      { subject: "gameData", callback: loadGameData }
+      { subject: "gameData", callback: loadGameData },
+      { subject: "match_found", callback: matchFound }
     ]
-    setListeners(listeners)
     addMessageListener(listeners)
-  }
 
-  const removeMessageListeners = () => {
-    removeMessageListener(listeners)
+    return () => removeMessageListener(listeners)
   }
 
 
   // INITIALIZATION // INITIALIZATION // INITIALIZATION //
 
-  const initialize = () => {
-    fetchPackData()
-    addMessageListeners()
-
-    return removeMessageListeners
-  }
-
-  useEffect(initialize, [])
-
-
+  useEffect(fetchPackData, [])   // called only on first render
+  useEffect(addMessageListeners) // called on every render
 
   return (
     <GameContext.Provider
@@ -118,7 +158,8 @@ export const GameProvider = ({ children }) => {
         votes,
         vote,
         select,
-        gameData
+        gameData,
+        clickImage
       }}
     >
       {children}

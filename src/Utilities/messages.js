@@ -41,7 +41,7 @@ const removeMessageListener = (listener) => {
     })
   }
   
-  treatMessageListener("remove", listener)
+  treatMessageListener("delete", listener)
 }
 
 

@@ -10,7 +10,7 @@ import { Card } from '../Components/Card'
 
 
 
-export const Board = ({ indices }) => {
+export const Board = ({ indices, match }) => {
   const [ width, height ] = useResize()
 
   let d
@@ -35,12 +35,14 @@ export const Board = ({ indices }) => {
         d={d}
         x={x}
         y={y}
+        match={match}
       />
       <Card
         index={indices[1]}
         d={d}
         x={x}
         y={y}
+        match={match}
       />
     </div>
   )

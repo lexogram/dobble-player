@@ -8,7 +8,7 @@ import { GameContext } from '../Contexts'
 import { Picture } from './Picture'
 
 
-export const Card = ({ index, top, d, x, y }) => {
+export const Card = ({ index, top, d, x, y, match }) => {
   const { BASE_URL, gameData } = useContext(GameContext)
   const {
     root,
@@ -44,7 +44,6 @@ export const Card = ({ index, top, d, x, y }) => {
   const imageURLs = cardImages.map( imageData => (
     images[imageData.imageIndex].source
   ))
-  console.log("imageURLs:", imageURLs);
   const layout = customLayout
     ? layouts[Object.keys(layouts)[0]]
     : layouts[layoutName]
@@ -79,6 +78,7 @@ export const Card = ({ index, top, d, x, y }) => {
     return (
       <Picture
         key={href}
+        match={href === match}
         path={BASE_URL + root}
         index={index}
         href={href}

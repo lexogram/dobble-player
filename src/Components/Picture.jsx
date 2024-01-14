@@ -3,8 +3,8 @@
  */
 
 
-import React from 'react'
-
+import React, { useContext } from 'react'
+import { GameContext } from '../Contexts'
 
 export const Picture = ({
   index,
@@ -15,7 +15,9 @@ export const Picture = ({
   r,
   crop,
   rotation,
+  match
 }) => {
+  const { clickImage } = useContext(GameContext)
 
   const circle = { cx, cy, r }
   const origin = `${cx} ${cy}`
@@ -28,10 +30,18 @@ export const Picture = ({
   const defId = `card_${index}${href}`
 
   const cropPath = crop ? { clipPath: `url(#${defId})` } : {}
-  const opacity = "0.05"
+  const opacity = match ? "0.1" : "0"
+
+
+  const clickPicture = () => {
+    clickImage( index, href )
+  }
+
 
   return (
-    <g>
+    <g
+      onClick={clickPicture}
+    >
       <defs>
         <clipPath
           id={defId}
