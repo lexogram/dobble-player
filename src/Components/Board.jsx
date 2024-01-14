@@ -6,8 +6,11 @@
 import React from 'react'
 import { useResize } from '../Hooks/useResize'
 
+import { Card } from '../Components/Card'
 
-export const Board = (props) => {
+
+
+export const Board = ({ indices }) => {
   const [ width, height ] = useResize()
 
   let d
@@ -24,28 +27,20 @@ export const Board = (props) => {
     d = (width + height - Math.sqrt(2 * width * height))
   }
 
-  const style = {
-    position: "absolute",
-    width: "var(--d)",
-    height: "var(--d)",
-    borderRadius: "100vmax",
-    backgroundColor: "green"
-  }
-
   return (
-    <div
-      style={{
-        height: "100vh",
-        "--d": d + "px",
-        "--x": x + "px",
-        "--y": y + "px"
-      }}
-    >
-      <div
-        style={{...style, left: "var(--x)", top: "var(--y)"}}
+    <div id="board">
+      <Card
+        index={indices[0]}
+        top={true}
+        d={d}
+        x={x}
+        y={y}
       />
-      <div
-        style={{...style, right: "var(--x)", bottom: "var(--y)"}}
+      <Card
+        index={indices[1]}
+        d={d}
+        x={x}
+        y={y}
       />
     </div>
   )

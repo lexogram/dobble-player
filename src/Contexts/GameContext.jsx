@@ -112,6 +112,7 @@ export const GameProvider = ({ children }) => {
   return (
     <GameContext.Provider
       value ={{
+        BASE_URL,
         packData,
         usersVote,
         votes,
