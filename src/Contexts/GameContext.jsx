@@ -33,6 +33,8 @@ export const GameProvider = ({ children }) => {
   const [ gameData, setGameData ] = useState()
   const [ lastClick, setLastClick ] = useState({})
   const [ score, setScore ] = useState({})
+  const [ foundBy, setFoundBy ] = useState()
+  
 
 
   // SELECTING A PACK // SELECTING A PACK // SELECTING A PACK //
@@ -103,21 +105,24 @@ export const GameProvider = ({ children }) => {
     const {
       href,
       user_name,
-      index,
-      score
+      scoreboard
     } = content
 
-    if (index === "game_over") {
+    setFoundBy(user_name)
+    // Forget any clicks applied to the previous cards
+    setLastClick({})
+    setScore(scoreboard)
+  }
+
+
+  const showNextCard = ({ content }) => {
+    if (content === "game_over") {
+      // TODO: show scoreboard
 
     } else {
-      // Show the next card
-      setGameData({ ...gameData, index })
-      // Forget any clicks applied to the previous cards
-      setLastClick({})
+      setGameData({ ...gameData, index: content })
+      setFoundBy()
     }
-
-    setScore(score)
-
   }
 
 
@@ -136,7 +141,8 @@ export const GameProvider = ({ children }) => {
     const listeners = [
       { subject: "votes", callback: updateVotes },
       { subject: "gameData", callback: loadGameData },
-      { subject: "match_found", callback: matchFound }
+      { subject: "match_found", callback: matchFound },
+      { subject: "show_next_card", callback: showNextCard }
     ]
     addMessageListener(listeners)
 
@@ -159,7 +165,8 @@ export const GameProvider = ({ children }) => {
         vote,
         select,
         gameData,
-        clickImage
+        clickImage,
+        foundBy
       }}
     >
       {children}
