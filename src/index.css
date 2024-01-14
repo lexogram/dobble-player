@@ -37,3 +37,70 @@ button:not(:disabled),
 .button {
   cursor: pointer
 }
+
+#score {
+  position: absolute;
+  top:0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #222e;
+  pointer-events: none;
+  font-size: 6vmin;
+  --edge: calc((100vw - 80vmin) / 2);
+}
+
+#score div {
+  position: absolute;
+  top: 50%;
+  border: 0.05em inset #ddd;
+  padding: 0 1em;
+  left: var(--edge);
+  right: var(--edge);
+  transform: translate(0, -50%);
+}
+
+#score h1 {
+  text-align: center;
+}
+
+#score ul {
+  list-style-type: none;
+  padding: 0;
+  max-height: calc(50vh - 2.05em);
+  overflow: auto
+}
+
+#score span {
+  display: inline-block;
+  width: 85%;
+}
+
+#score .score {
+  text-align: right;
+  width: 15%;
+}
+
+#score button {
+  position: absolute;
+  bottom: 0;
+  font-size: inherit;
+  left: var(--edge);
+  right: var(--edge);
+  width: 80vmin;
+  border: 0.05em outset #888;
+  border-radius: 0.25em;
+  background-color: #222;
+  color: inherit;
+  z-index: 99;
+  pointer-events: all;
+}
+
+#score button:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+#score button:active {
+  border-style: inset;
+}

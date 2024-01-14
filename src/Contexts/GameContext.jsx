@@ -25,7 +25,8 @@ export const GameProvider = ({ children }) => {
     sendMessage,
     addMessageListener,
     removeMessageListener,
-    group_name
+    group_name,
+    members
   } = useContext(WSContext)
   const [ packData, setPackData ] = useState([])
   const [ votes, setVotes ] = useState({})
@@ -34,7 +35,8 @@ export const GameProvider = ({ children }) => {
   const [ lastClick, setLastClick ] = useState({})
   const [ score, setScore ] = useState({})
   const [ foundBy, setFoundBy ] = useState()
-  
+  const [ showScore, setShowScore ] = useState(false)
+
 
 
   // SELECTING A PACK // SELECTING A PACK // SELECTING A PACK //
@@ -103,21 +105,37 @@ export const GameProvider = ({ children }) => {
 
   const matchFound = ({ content }) => {
     const {
-      href,
       user_name,
-      scoreboard
+      score,
     } = content
 
     setFoundBy(user_name)
     // Forget any clicks applied to the previous cards
     setLastClick({})
-    setScore(scoreboard)
+
+    // Ensure that every member has the correct score attached to
+    // their name even if their name is not unique
+    const names = Object.values(members)
+    const unique = names.filter(name => {
+      return (names.indexOf(name) === names.lastIndexOf(name))
+    })
+
+    const entries = Object.entries(members)
+
+    let tally = entries.reduce((tally, [uuid, name]) => {
+      if (unique.indexOf(name) < 0) {
+        name = name + "-" + uuid.slice(0,3)
+      }
+      tally[name] = score[uuid] || 0
+      return tally
+    }, {})
+    setScore(tally)
   }
 
 
   const showNextCard = ({ content }) => {
     if (content === "game_over") {
-      // TODO: show scoreboard
+      setShowScore(true)
 
     } else {
       setGameData({ ...gameData, index: content })
@@ -166,7 +184,9 @@ export const GameProvider = ({ children }) => {
         select,
         gameData,
         clickImage,
-        foundBy
+        foundBy,
+        score,
+        showScore
       }}
     >
       {children}

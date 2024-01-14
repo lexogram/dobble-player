@@ -11,10 +11,15 @@ import { Board } from '../Components/Board'
 
 
 export const Game = () => {
-  const { gameData } = useContext(GameContext)
-  const { index, randomIndices, cardData, images } = gameData
+  const { gameData, showScore } = useContext(GameContext)
+  const {
+    index,
+    randomIndices,
+    cardData,
+    images
+  } = gameData
 
-  const indices = randomIndices.slice(index, index + 2)
+  const indices = randomIndices.slice(index, index + 2)  
 
 
   // Find the file name of the images that match
@@ -32,7 +37,11 @@ export const Game = () => {
 
   return (
     <>
-      <Board indices={indices} match={match}/>
+      <Board 
+        indices={indices} 
+        match={match}
+        showScore={showScore}
+      />
     </>
   )
 }

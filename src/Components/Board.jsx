@@ -7,10 +7,12 @@ import React from 'react'
 import { useResize } from '../Hooks/useResize'
 
 import { Card } from '../Components/Card'
+import { ScoreBoard } from '../Components/ScoreBoard'
 
 
 
-export const Board = ({ indices, match }) => {
+
+export const Board = ({ indices, match, showScore }) => {
   const [ width, height ] = useResize()
 
   let d
@@ -44,6 +46,7 @@ export const Board = ({ indices, match }) => {
         y={y}
         match={match}
       />
+      { showScore && <ScoreBoard />}
     </div>
   )
 }
