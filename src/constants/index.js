@@ -1,2 +1,2 @@
-export const PORT=5555
+export const PORT=10000
 export const PACK_SOURCE="/dobble/packs.json"
