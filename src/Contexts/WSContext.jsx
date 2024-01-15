@@ -9,7 +9,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react'
-import { PORT } from '../constants'
+import { IS_DEPLOYED, HOSTNAME, PORT } from '../constants'
 import {
   addMessageListener,
   removeMessageListener,
@@ -18,29 +18,12 @@ import {
 
 // Determine the URL to use for WebSocket
 const [ SOCKET_URL, BASE_URL ] = (function (){
-  let URL = location.hostname
-
-  const isLocal = (() => {
-    // Check the range 172.16.x.x to 172.31.x.x
-    const match = /^172\.(\d{2})\./.test(URL)
-    if (match) {
-      if (match[1] > 15 && match[1] < 32) {
-        return true
-      }
-    }
-
-    return URL.startsWith("localhost")
-        || URL.startsWith("10.")
-        || URL.startsWith("192.168.")
-        || URL.startsWith("127.0.0.")
-  })()
-
-  const wsProtocol = isLocal ? "ws" : "wss"
-  const httProtocol = isLocal ? "http" : "https"
+  const wsProtocol = IS_DEPLOYED ? "wss" : "ws"
+  const httProtocol = IS_DEPLOYED ? "https" : "http"
 
   return [
-    `${wsProtocol}://${URL}:${PORT}`,
-    `${httProtocol}://${URL}:${PORT}/` // trailing slash
+    `${wsProtocol}://${HOSTNAME}${PORT}`,  // no trailing slash
+    `${httProtocol}://${HOSTNAME}${PORT}/` // trailing slash
   ]
 })()
 
