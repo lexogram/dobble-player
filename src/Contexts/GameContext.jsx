@@ -82,6 +82,9 @@ export const GameProvider = ({ children }) => {
 
   const loadGameData = ({ content }) => {
     setGameData(content)
+    setLastClick({})
+    setScore({})
+    setFoundBy()
   }
 
 
@@ -96,21 +99,24 @@ export const GameProvider = ({ children }) => {
         subject: "match",
         content: { href, group_name }
       })
-    } else {
-      setLastClick({ cardIndex, href })
+
+      cardIndex = -1 // both images have been found
     }
+
+    setLastClick({ cardIndex, href })
   }
 
 
   const matchFound = ({ content }) => {
     const {
+      href,
       user_name,
       score,
     } = content
 
     setFoundBy(user_name)
-    // Forget any clicks applied to the previous cards
-    setLastClick({})
+    // Highlight the images found by someone, and block the mouse
+    setLastClick({ cardIndex: -1, href })
 
     // Ensure that every member has the correct score attached to
     // their name even if their name is not unique
@@ -134,6 +140,9 @@ export const GameProvider = ({ children }) => {
 
   const showNextCard = ({ content }) => {
     setGameData({ ...gameData, index: content })
+
+    // Forget any clicks applied to the previous cards
+    setLastClick({})
 
     if (content !== "game_over") {
       setFoundBy()
@@ -181,6 +190,7 @@ export const GameProvider = ({ children }) => {
         select,
         gameData,
         clickImage,
+        lastClick,
         foundBy,
         score,
         setGameData

@@ -17,7 +17,11 @@ export const Picture = ({
   rotation,
   match
 }) => {
-  const { clickImage, foundBy } = useContext(GameContext)
+  const {
+    clickImage, // function
+    lastClick,  // { cardIndex, href }
+    foundBy     // user_name
+  } = useContext(GameContext)
 
   const circle = { cx, cy, r }
   const origin = `${cx} ${cy}`
@@ -31,7 +35,18 @@ export const Picture = ({
 
   const cropPath = crop ? { clipPath: `url(#${defId})` } : {}
   const showStamp = match && foundBy
-  const colour = "#0909"
+  const colour = "#0909" // <<< HARD-CODED >>>
+  const found = lastClick.cardIndex === -1
+
+  const imageClicked = lastClick.href === href
+                  && ( lastClick.cardIndex === index
+                    || found
+                     )
+  const opacity = imageClicked ? "1" : "0.8"
+  const className = imageClicked ? "shadow" : ""
+  const style = found
+    ? { pointerEvents: "none", cursor: "default" }
+    : { pointerEvents: "all", cursor: "pointer" }
 
 
   const clickPicture = () => {
@@ -41,6 +56,7 @@ export const Picture = ({
 
   return (
     <g
+      style={style}
       onClick={clickPicture}
     >
       <defs>
@@ -58,6 +74,8 @@ export const Picture = ({
         {...cropPath}
         transform={`rotate(${rotation})`}
         transform-origin={origin}
+        opacity={opacity}
+        className={className}
       />
       { showStamp && <g>
           <text
