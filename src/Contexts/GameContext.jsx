@@ -35,7 +35,6 @@ export const GameProvider = ({ children }) => {
   const [ lastClick, setLastClick ] = useState({})
   const [ score, setScore ] = useState({})
   const [ foundBy, setFoundBy ] = useState()
-  const [ showScore, setShowScore ] = useState(false)
 
 
 
@@ -134,11 +133,9 @@ export const GameProvider = ({ children }) => {
 
 
   const showNextCard = ({ content }) => {
-    if (content === "game_over") {
-      setShowScore(true)
+    setGameData({ ...gameData, index: content })
 
-    } else {
-      setGameData({ ...gameData, index: content })
+    if (content !== "game_over") {
       setFoundBy()
     }
   }
@@ -186,7 +183,7 @@ export const GameProvider = ({ children }) => {
         clickImage,
         foundBy,
         score,
-        showScore
+        setGameData
       }}
     >
       {children}

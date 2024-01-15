@@ -7,7 +7,7 @@ import React, { useContext } from 'react'
 import { GameContext } from '../Contexts'
 
 export const ScoreBoard = (props) => {
-  const { score } = useContext(GameContext)
+  const { score, setGameData } = useContext(GameContext)
   // { <user_name>: <integer> }
 
   const byScore = (a, b) => {
@@ -37,7 +37,11 @@ export const ScoreBoard = (props) => {
           {scoreboard}
         </ul>
       </div>
-      <button>Play again</button>
+      <button
+        onClick={() => setGameData()}
+      >
+        Play again
+      </button>
     </div>
   )
 }
