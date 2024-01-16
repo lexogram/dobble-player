@@ -1,6 +1,6 @@
 # Dobble Player #
 
-[Demo](https://lexogram.github.io/dobble-player/)
+[Demo](https://lexogram.github.io/dobble-player)
 
 (You might have to wait a minute or two while the backend starts up.)
 
