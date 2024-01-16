@@ -3,8 +3,8 @@
  */
 
 
-import React, { useContext, useRef, useEffect, useState } from 'react'
-import { DELAY_ARRAY } from '../constants'
+import React, { useRef, useEffect, useState } from 'react'
+import { DELAY_ARRAY } from '../Constants'
 
 
 export const DelaySlider = ({ delay, setDelay }) => {

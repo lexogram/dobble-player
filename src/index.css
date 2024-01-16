@@ -43,6 +43,43 @@ form button {
   width: 100%
 }
 
+form input[readonly] {
+  color: #c90;
+}
+
+label {
+  position: relative; /* to allow lock image to be absolute*/
+}
+
+label[for=group-name] span {
+  transition: opacity 500ms;
+}
+
+label[for=group-name].locked span {
+  opacity: 0.5;
+}
+
+form img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2em;
+  opacity: 0;
+  transition: opacity 5000ms;
+  pointer-events: none;
+  cursor: default;
+}
+
+label[for=group-name].locked img{
+  opacity: 1;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+label[for=create-group].locked {
+  opacity: 0.25;
+}
+
 label,
 label[for$=-name] * { /* user-name, group-name, not create-group */
   display: block;
@@ -57,6 +94,8 @@ li.owner {
   font-weight: bold;
   color: #fc6;
 }
+
+
 
 
 /* WAITING ROOM // WAITING ROOM // WAITING ROOM // WAITING ROOM */

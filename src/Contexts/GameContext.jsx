@@ -11,7 +11,7 @@ import React, {
 } from 'react'
 
 import { WSContext } from './WSContext'
-import { PACK_SOURCE, DELAY_ARRAY } from '../constants'
+import { PACK_SOURCE, DELAY_ARRAY } from '../Constants'
 const DEFAULT_DELAY = DELAY_ARRAY[2][0]
 
 

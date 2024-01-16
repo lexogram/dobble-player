@@ -9,7 +9,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react'
-import { IS_DEPLOYED, HOSTNAME, PORT } from '../constants'
+import { IS_DEPLOYED, HOSTNAME, PORT } from '../Constants'
 import {
   addMessageListener,
   removeMessageListener,

@@ -10,6 +10,8 @@ import React, {
   useEffect
 } from 'react'
 import { WSContext } from '../Contexts'
+import lock from '../Assets/locked.png'
+import unlocked from '../Assets/unlocked.png'
 
 
 
@@ -19,10 +21,14 @@ export const JoinGroup = () => {
     errorStatus
   } = useContext(WSContext)
 
-  const [ user_name, setUserName ] = useState("")
-  const [ group_name, setGroupName ] = useState("Group")
-  const [ create_group, setCreateGroup ] = useState(false)
+  // Check if this is a referral
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryGroup = urlParams.get('group');
 
+  const [ user_name, setUserName ] = useState("")
+  const [ group_name, setGroupName ] = useState(queryGroup || "")
+  const [ create_group, setCreateGroup ] = useState(false)
+  const [ locked, setLocked ] = useState(!!queryGroup)
   const [ disabled, setDisabled ] = useState(true)
 
 
@@ -64,6 +70,12 @@ export const JoinGroup = () => {
   }
 
 
+  const unlock = ({ target }) => {
+    target.src = unlocked
+    setLocked(false)
+  }
+
+
   useEffect(focusOn, [])
 
 
@@ -83,7 +95,10 @@ export const JoinGroup = () => {
           ref={focusRef}
         />
       </label>
-      <label htmlFor="group-name">
+      <label
+        htmlFor="group-name"
+        className={locked ? "locked" : ""}
+      >
         <span>Choose a group:</span>
         <input
           type="text"
@@ -91,15 +106,25 @@ export const JoinGroup = () => {
           name="group_name"
           value={group_name}
           onChange={updateName}
+          readOnly={locked}
+        />
+        <img
+          src={lock}
+          alt="locked"
+          onClick={unlock}
         />
       </label>
-      <label htmlFor="create-group">
+      <label
+        htmlFor="create-group"
+        className={locked ? "locked" : ""}
+      >
         <input
           type="checkbox"
           id="create-group"
           name="create_group"
           checked={create_group}
           onChange={toggleCreateGroup}
+          disabled={locked}
         />
         <span>Create a new group</span>
       </label>
