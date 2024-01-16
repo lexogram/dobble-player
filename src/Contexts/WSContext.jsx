@@ -246,7 +246,7 @@ export const WSProvider = ({ children }) => {
     const message = {
       recipient_id: "system",
       subject: "join_group",
-      content // { user_name, group_name, create_group }
+      content // { user_name, group_name, create_group, ... }
     }
 
     const { user_name } = content

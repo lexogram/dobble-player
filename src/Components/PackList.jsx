@@ -14,7 +14,8 @@ export const PackList = () => {
     votes,
     usersVote,
     vote,
-    select
+    select,
+    delay
   } = useContext(GameContext)
   const { user_id, owner_id, BASE_URL } = useContext(WSContext)
 
@@ -29,7 +30,8 @@ export const PackList = () => {
       isUsersChoice={pack.name === usersVote}
       canVote={!isOwner}
       vote={() => vote(pack.name)}
-      select={isOwner && (() => select(pack.name))}
+      select={isOwner && select}
+      delay={delay}
     />
   ))
 

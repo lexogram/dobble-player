@@ -11,7 +11,8 @@ import React, {
 } from 'react'
 
 import { WSContext } from './WSContext'
-import { PACK_SOURCE } from '../constants'
+import { PACK_SOURCE, DELAY_ARRAY } from '../constants'
+const DEFAULT_DELAY = DELAY_ARRAY[2][0]
 
 
 
@@ -35,6 +36,8 @@ export const GameProvider = ({ children }) => {
   const [ lastClick, setLastClick ] = useState({})
   const [ score, setScore ] = useState({})
   const [ foundBy, setFoundBy ] = useState()
+  const [ delay, setDelay ] = useState(DEFAULT_DELAY)
+
 
 
 
@@ -69,12 +72,14 @@ export const GameProvider = ({ children }) => {
   }
 
 
-  const select = pack_name => {
+  const select = (pack_name, delay) => {
     const message = {
       recipient_id: "game",
       subject: "select_pack",
-      content: { pack_name, group_name }
+      content: { pack_name, group_name, delay }
     }
+
+    setDelay(delay)
 
     sendMessage(message)
   }
@@ -138,6 +143,15 @@ export const GameProvider = ({ children }) => {
   }
 
 
+  const requestNextCard = () => {
+    sendMessage({
+      recipient_id: "game",
+      subject: "request_next_card",
+      content: group_name
+    })
+  }
+
+
   const showNextCard = ({ content }) => {
     setGameData({ ...gameData, index: content })
 
@@ -187,11 +201,13 @@ export const GameProvider = ({ children }) => {
         usersVote,
         votes,
         vote,
+        delay,
         select,
         gameData,
         clickImage,
         lastClick,
         foundBy,
+        requestNextCard,
         score,
         setGameData
       }}

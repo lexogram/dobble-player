@@ -7,6 +7,7 @@ import React from 'react'
 import { useResize } from '../Hooks/useResize'
 
 import { Card } from '../Components/Card'
+import { NextCard } from './NextCard'
 import { ScoreBoard } from '../Components/ScoreBoard'
 
 
@@ -28,6 +29,7 @@ export const Board = ({ indices, match, showScore }) => {
   } else {
     d = (width + height - Math.sqrt(2 * width * height))
   }
+  const r = d * (Math.sqrt(2) - 1) / 2
 
   return (
     <div id="board">
@@ -46,7 +48,7 @@ export const Board = ({ indices, match, showScore }) => {
         y={y}
         match={match}
       />
-      { showScore && <ScoreBoard />}
+      { showScore ? <ScoreBoard /> : <NextCard r={r}/> }
     </div>
   )
 }

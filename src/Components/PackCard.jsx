@@ -3,8 +3,10 @@
  */
 
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Star } from './Star'
+import { DelaySlider } from '../Components/DelaySlider'
+
 
 
 export const PackCard = ({
@@ -14,10 +16,15 @@ export const PackCard = ({
   isUsersChoice,
   canVote,
   vote,
-  select
+  select, // function if isOwner, or undefined
+  delay: defaultDelay
 }) => {
-  const { name, count, thumbnail, index } = pack
+  const { name, count, thumbnail } = pack
+  const [ delay, setDelay ] = useState(defaultDelay)
 
+  const selectPack = () => {
+    select(pack.name, delay)
+  }
 
   return (
     <li
@@ -32,10 +39,17 @@ export const PackCard = ({
         canVote={canVote}
         action={canVote ? vote : () => {}}
       />
-      {select &&
-        <button onClick={select} >
-          Select
-        </button>
+      { select && <>
+          <DelaySlider
+            delay={delay}
+            setDelay={setDelay}
+          />
+          <button
+            onClick={selectPack}
+          >
+            Select
+          </button>
+        </>
       }
     </li>
   )

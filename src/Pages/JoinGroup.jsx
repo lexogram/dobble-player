@@ -9,7 +9,7 @@ import React, {
   useRef,
   useEffect
 } from 'react'
-import { WSContext } from '../Contexts/WSContext.jsx'
+import { WSContext } from '../Contexts'
 
 
 
@@ -22,6 +22,7 @@ export const JoinGroup = () => {
   const [ user_name, setUserName ] = useState("")
   const [ group_name, setGroupName ] = useState("Group")
   const [ create_group, setCreateGroup ] = useState(false)
+
   const [ disabled, setDisabled ] = useState(true)
 
 

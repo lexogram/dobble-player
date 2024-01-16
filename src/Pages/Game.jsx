@@ -12,8 +12,9 @@ import { Board } from '../Components/Board'
 
 export const Game = () => {
   const { gameData } = useContext(GameContext)
-  const {
+  let {
     index,
+    nextIndex,
     randomIndices,
     cardData,
     images
@@ -28,6 +29,12 @@ export const Game = () => {
     indices = randomIndices.slice(-2) // last two: game is over
 
   } else {
+    if (index === -1) {
+      // This user is joining at a time when the game is paused,
+      // waiting for the owner to click "Next"
+      index = isNaN(nextIndex) ? images.length - 2 : nextIndex - 1
+    }
+
     indices = randomIndices.slice(index, index + 2)
 
 
