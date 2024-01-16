@@ -1,5 +1,9 @@
 # Dobble Player #
 
+[Demo](https://lexogram.github.io/dobble-player/)
+
+(You might have to wait a minute or two while the backend starts up.)
+
 Frontend for a mono-matching game. The aim of the game is to be the first to find two images that match. (They might have different rotations and different sizes).
 
 You can create a group and share its name with your friends. They can then join the same group, and vote for which pack of cards they want to use for the game.
