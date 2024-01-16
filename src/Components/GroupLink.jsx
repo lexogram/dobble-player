@@ -15,8 +15,9 @@ export const GroupLink = () => {
   const [ src, setSrc ] = useState()
   const [ collapsed, setCollapsed ] = useState(true)
   
+  const { origin, pathname } = location
   const group = encodeURI(group_name)
-  const groupLink = `${location.origin}?group=${group}`
+  const groupLink = `${origin}${pathname}?group=${group}`
   
 
   const toggleCollapsed = () => {
