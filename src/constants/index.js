@@ -1,5 +1,6 @@
 const hostname = location.hostname
 export const IS_DEPLOYED = /player.*\.onrender.com/.test(hostname)
+  || /lexogram.github.io/.test(hostname)
 
 export const HOSTNAME = IS_DEPLOYED
   ? "player-backend-o5aj.onrender.com"
